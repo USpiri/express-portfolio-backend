@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { router } from './routes'
+import dbConnect from './config/mongo'
 
 const PORT = process.env.PROT ?? 3000
 const app = express()
@@ -9,6 +10,10 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(router)
+
+dbConnect()
+  .then(() => console.log('Connection established'))
+  .catch((err) => console.log(err))
 
 app.get('/ping', (_req, res) => {
   console.log('Someone pinged')
