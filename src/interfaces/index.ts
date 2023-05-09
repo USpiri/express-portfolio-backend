@@ -1,3 +1,4 @@
+export * from './experience.interface'
 export * from './handlers.interface'
 export * from './project.interface'
 export * from './result.interface'
