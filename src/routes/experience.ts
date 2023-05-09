@@ -7,11 +7,12 @@ import {
   postExperience,
   putExperience
 } from '../controllers/experience.controller'
+import { checkSession } from '../middlewares/session.middleware'
 
 const router = Router()
 
 router.get('/:id', getExperience)
-router.get('/', getExperiences)
+router.get('/', checkSession, getExperiences)
 router.post('/', postExperience)
 router.put('/:id', putExperience)
 router.delete('/:id', deleteExperience)
