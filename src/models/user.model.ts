@@ -1,5 +1,24 @@
 import { Schema, model } from 'mongoose'
-import { User } from '@interface'
+import { SocialMedia, User } from '@interface'
+
+const SocialMediaShema = new Schema<SocialMedia>({
+  github: {
+    type: String,
+    required: true
+  },
+  twitter: {
+    type: String,
+    required: true
+  },
+  instagram: {
+    type: String,
+    required: true
+  },
+  linkedin: {
+    type: String,
+    required: true
+  }
+})
 
 const UserShema = new Schema<User>(
   {
@@ -33,6 +52,10 @@ const UserShema = new Schema<User>(
     },
     image: {
       type: String,
+      required: true
+    },
+    media: {
+      type: SocialMediaShema,
       required: true
     }
   },
