@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from 'express'
-import { getUser, postUser, updateUser } from '../controllers/user'
+import { deleteUser, getUser, getUsers, postUser, putUser } from '../controllers/user'
 
 const router = Router()
 
-router.get('/', getUser)
+router.get('/:id', getUser)
+router.get('/', getUsers)
 router.post('/', postUser)
-router.put('/:id', updateUser)
+router.put('/:id', putUser)
+router.delete('/:id', deleteUser)
 
 export { router }

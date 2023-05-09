@@ -1,15 +1,16 @@
 import { User } from '@interface'
 import UserModel from '../models/user.model'
+import { DeleteResult } from '../interfaces/result.interface'
 
 const createUser = async (user: User): Promise<User> => {
   return await UserModel.create(user)
 }
 
-const getUser = async (id: string): Promise<User | null> => {
+const findUser = async (id: string): Promise<User | null> => {
   return await UserModel.findOne({ _id: id })
 }
 
-const getUsers = async (): Promise<User[]> => {
+const findUsers = async (): Promise<User[]> => {
   return await UserModel.find({})
 }
 
@@ -20,8 +21,8 @@ const updateUser = async (id: string, user: User): Promise<User | null> => {
   })
 }
 
-const deleteUser = async (id: string): Promise<User | null> => {
-  return await UserModel.findOne({ _id: id })
+const removeUser = async (id: string): Promise<DeleteResult> => {
+  return await UserModel.deleteOne({ _id: id })
 }
 
-export { createUser, getUser, getUsers, updateUser, deleteUser }
+export { createUser, findUser, findUsers, updateUser, removeUser }

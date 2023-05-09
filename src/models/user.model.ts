@@ -44,7 +44,8 @@ const UserShema = new Schema<User>(
     },
     email: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
     location: {
       type: String,
