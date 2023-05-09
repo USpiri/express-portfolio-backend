@@ -12,9 +12,9 @@ import { checkSession } from '../middlewares/session.middleware'
 const router = Router()
 
 router.get('/:id', getExperience)
-router.get('/', checkSession, getExperiences)
-router.post('/', postExperience)
-router.put('/:id', putExperience)
-router.delete('/:id', deleteExperience)
+router.get('/', getExperiences)
+router.post('/', checkSession, postExperience)
+router.put('/:id', checkSession, putExperience)
+router.delete('/:id', checkSession, deleteExperience)
 
 export { router }

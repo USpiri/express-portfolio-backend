@@ -7,13 +7,14 @@ import {
   postProject,
   putProject
 } from '../controllers/project.controller'
+import { checkSession } from '../middlewares/session.middleware'
 
 const router = Router()
 
 router.get('/:id', getProject)
 router.get('/', getProjects)
-router.post('/', postProject)
-router.put('/:id', putProject)
-router.delete('/:id', deleteProject)
+router.post('/', checkSession, postProject)
+router.put('/:id', checkSession, putProject)
+router.delete('/:id', checkSession, deleteProject)
 
 export { router }

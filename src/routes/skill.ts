@@ -7,13 +7,14 @@ import {
   postSkill,
   putSkill
 } from '../controllers/skill.controller'
+import { checkSession } from '../middlewares/session.middleware'
 
 const router = Router()
 
 router.get('/:id', getSkill)
 router.get('/', getSkills)
-router.post('/', postSkill)
-router.put('/:id', putSkill)
-router.delete('/:id', deleteSkill)
+router.post('/', checkSession, postSkill)
+router.put('/:id', checkSession, putSkill)
+router.delete('/:id', checkSession, deleteSkill)
 
 export { router }
