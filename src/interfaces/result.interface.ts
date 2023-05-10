@@ -11,5 +11,5 @@ export interface LoginRestult {
 
 export interface TokenResult extends JwtPayload {
   id: string
-  exp?: number // Agregar esta propiedad
+  exp?: number
 }

@@ -6,7 +6,6 @@ const handleHttp = (
   error: string,
   extra: ErrorHandlerExtra = { code: 500, errorRaw: null }
 ): void => {
-  // if (extra?.errorRaw != null) console.log(extra?.errorRaw)
   const detail = extra?.errorRaw
   res.status(extra?.code ?? 500)
   res.send({ error, detail })
