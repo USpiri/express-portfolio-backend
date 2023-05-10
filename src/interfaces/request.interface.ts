@@ -1,6 +1,6 @@
 import { Request } from 'express'
-import { JwtPayload } from 'jsonwebtoken'
+import { TokenResult } from './result.interface'
 
 export interface ExtendedRequest extends Request {
-  id?: JwtPayload | string
+  token?: TokenResult
 }

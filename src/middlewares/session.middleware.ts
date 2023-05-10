@@ -13,14 +13,19 @@ const checkSession = (req: ExtendedRequest, res: Response, next: NextFunction): 
     }
 
     const jwt = header.split(' ').pop() ?? ''
-    const decodedToken = verifyToken(jwt) as { id: string }
+    const decodedToken = verifyToken(jwt)
 
     if (decodedToken === null) {
       handleHttp(res, 'INVALID_TOKEN', { code: 401 })
       return
     }
 
-    req.id = decodedToken
+    if (decodedToken.exp != null && Date.now() >= decodedToken.exp * 1000) {
+      handleHttp(res, 'TOKEN_EXPIRED', { code: 401 })
+      return
+    }
+
+    req.token = decodedToken
     next()
   } catch (error) {
     handleHttp(res, 'INVALID_SESSION', { code: 401, errorRaw: error })

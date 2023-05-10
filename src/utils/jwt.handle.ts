@@ -1,4 +1,5 @@
-import { JwtPayload, sign, verify } from 'jsonwebtoken'
+import { TokenResult } from '@interface'
+import { sign, verify } from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECTRET ?? 'default.sectret.key'
 
@@ -8,9 +9,18 @@ const signToken = (id: string): string => {
   })
 }
 
-const verifyToken = (jwt: string): string | JwtPayload | null => {
+const verifyToken = (jwt: string): TokenResult | null => {
   try {
-    return verify(jwt, JWT_SECRET)
+    const decoded = verify(jwt, JWT_SECRET, {
+      ignoreExpiration: false
+    })
+    if (typeof decoded === 'string') {
+      return null
+    }
+    return {
+      id: decoded.id,
+      exp: decoded.exp
+    }
   } catch (error) {
     return null
   }
