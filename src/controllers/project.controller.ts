@@ -14,7 +14,7 @@ const getProject = async ({ params }: Request, res: Response): Promise<void> => 
     const response = await findProject(id)
 
     if (response === null) {
-      handleHttp(res, 'ERROR_PROJECT_NOT_FOUNT', { code: 404 })
+      handleHttp(res, 'ERROR_PROJECT_NOT_FOUND', { code: 404 })
       return
     }
 

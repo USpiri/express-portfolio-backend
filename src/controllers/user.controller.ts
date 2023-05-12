@@ -11,7 +11,7 @@ const getUser = async ({ params }: Request, res: Response): Promise<void> => {
     const response = await findUser(id)
 
     if (response === null) {
-      handleHttp(res, 'ERROR_USER_NOT_FOUNT', { code: 404 })
+      handleHttp(res, 'ERROR_USER_NOT_FOUND', { code: 404 })
       return
     }
 
@@ -63,7 +63,7 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
       }
     }
     if (user === null) {
-      handleHttp(res, 'ERROR_USER_NOT_FOUNT', { code: 404 })
+      handleHttp(res, 'ERROR_USER_NOT_FOUND', { code: 404 })
       return
     }
     if (file === null || file === undefined) {

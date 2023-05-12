@@ -8,7 +8,7 @@ const getSkill = async ({ params }: Request, res: Response): Promise<void> => {
     const response = await findSkill(id)
 
     if (response === null) {
-      handleHttp(res, 'ERROR_SKILL_NOT_FOUNT', { code: 404 })
+      handleHttp(res, 'ERROR_SKILL_NOT_FOUND', { code: 404 })
       return
     }
 

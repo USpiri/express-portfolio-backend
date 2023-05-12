@@ -14,7 +14,7 @@ const getExperience = async ({ params }: Request, res: Response): Promise<void> 
     const response = await findExperience(id)
 
     if (response === null) {
-      handleHttp(res, 'ERROR_EXPERIENCE_NOT_FOUNT', { code: 404 })
+      handleHttp(res, 'ERROR_EXPERIENCE_NOT_FOUND', { code: 404 })
       return
     }
 
