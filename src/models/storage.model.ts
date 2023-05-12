@@ -1,19 +1,26 @@
 import { Schema, model } from 'mongoose'
 import { Storage } from '../interfaces/storage.interface'
 
-const StorageShema = new Schema<Storage>(
+export const StorageShema = new Schema<Storage>(
   {
     filename: {
       type: String,
-      required: true
+      unique: true
     },
     path: {
-      type: String,
-      required: true
+      type: String
     },
     userId: {
-      type: String,
-      required: true
+      type: String
+    },
+    ext: {
+      type: String
+    },
+    imageSrc: {
+      type: String
+    },
+    thumbnailUrl: {
+      type: String
     }
   },
   {

@@ -1,6 +1,9 @@
 import { Request, Response } from 'express'
 import { handleHttp } from '../utils/error.handle'
 import { createUser, findUser, findUsers, removeUser, updateUser } from '../services/user'
+import { Storage } from '@interface'
+import { findFile, removeFile, uploadFile } from '../services/storage'
+import fs from 'fs'
 
 const getUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
@@ -46,6 +49,46 @@ const putUser = async ({ params, body }: Request, res: Response): Promise<void> 
   }
 }
 
+const putUserImage = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { params, file, protocol } = req
+    const { id } = params
+    const user = await findUser(id)
+
+    if (user?.image !== undefined) {
+      const dataFile = await findFile(user?.image._id ?? '')
+      if (dataFile !== null) {
+        fs.unlinkSync(dataFile.path)
+        await removeFile(dataFile.filename)
+      }
+    }
+    if (user === null) {
+      handleHttp(res, 'ERROR_USER_NOT_FOUNT', { code: 404 })
+      return
+    }
+    if (file === null || file === undefined) {
+      handleHttp(res, 'ERROR_FILE_NOT_PROVIDED', { code: 400 })
+      return
+    }
+
+    const data: Storage = {
+      filename: file.filename,
+      path: file.path,
+      userId: id,
+      ext: file.mimetype,
+      imageSrc: `${protocol}://${req.get('host') ?? ''}/image/${file.filename}`,
+      thumbnailUrl: `${protocol}://${req.get('host') ?? ''}/thumbnail/${file.filename}`
+    }
+
+    const newFile = await uploadFile(data)
+    user.image = newFile
+    const response = await updateUser(id, user)
+    res.send(response)
+  } catch (error) {
+    handleHttp(res, 'ERROR_UPDATE_USER', { errorRaw: error })
+  }
+}
+
 const deleteUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const { id } = params
@@ -60,4 +103,4 @@ const deleteUser = async ({ params }: Request, res: Response): Promise<void> => 
   }
 }
 
-export { getUser, getUsers, postUser, putUser, deleteUser }
+export { getUser, getUsers, postUser, putUser, deleteUser, putUserImage }

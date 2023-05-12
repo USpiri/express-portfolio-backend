@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose'
 import { SocialMedia, User } from '@interface'
+import { StorageShema } from './storage.model'
 
 const SocialMediaShema = new Schema<SocialMedia>(
   {
@@ -58,8 +59,7 @@ const UserShema = new Schema<User>(
       required: true
     },
     image: {
-      type: String,
-      required: true
+      type: StorageShema
     },
     media: {
       type: SocialMediaShema,

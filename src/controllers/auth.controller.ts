@@ -4,9 +4,7 @@ import { handleHttp } from '../utils/error.handle'
 
 const registerAdmin = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    console.log(body)
     const response = await registerUser(body)
-    console.log(response)
 
     if (typeof response === 'string') {
       handleHttp(res, response, { code: 409 })

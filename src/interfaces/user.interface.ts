@@ -1,3 +1,5 @@
+import { Storage } from './storage.interface'
+
 export interface User {
   name: string
   title: string
@@ -6,7 +8,7 @@ export interface User {
   phone: string
   email: string
   location: string
-  image: string
+  image?: Storage
   media: SocialMedia
 }
 
