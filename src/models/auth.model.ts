@@ -14,7 +14,6 @@ const AuthShema = new Schema<Auth>(
     }
   },
   {
-    _id: false,
     versionKey: false
   }
 )

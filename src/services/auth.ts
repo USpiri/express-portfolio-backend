@@ -4,12 +4,19 @@ import { encrypt, verify } from '../utils/password.handle'
 import AuthModel from '../models/auth.model'
 
 const registerUser = async ({ username, password }: Auth): Promise<string | Auth> => {
-  const check = await AuthModel.findOne({ username })
+  try {
+    const check = await AuthModel.findOne({ username })
 
-  if (check !== null) return 'USER_ALREADY_EXIST'
+    if (check !== null) return 'USER_ALREADY_EXIST'
 
-  const encryptedPassword = await encrypt(password)
-  return await AuthModel.create({ username, password: encryptedPassword })
+    const encryptedPassword = await encrypt(password)
+    const response = await AuthModel.create({ username, password: encryptedPassword })
+    console.log(response)
+
+    return response
+  } catch (error) {
+    return 'DATA_BASE_ERROR'
+  }
 }
 
 const loginUser = async ({ username, password }: Auth): Promise<string | LoginRestult> => {
