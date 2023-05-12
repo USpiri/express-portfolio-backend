@@ -11,7 +11,6 @@ const registerUser = async ({ username, password }: Auth): Promise<string | Auth
 
     const encryptedPassword = await encrypt(password)
     const response = await AuthModel.create({ username, password: encryptedPassword })
-    console.log(response)
 
     return response
   } catch (error) {

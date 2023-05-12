@@ -23,8 +23,6 @@ const getFile = async (req: ExtendedRequest, res: Response): Promise<void> => {
       thumbnailUrl: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${file.filename}`
     }
 
-    console.log(data)
-
     const response = await uploadFile(data)
     res.send(response)
   } catch (e) {
