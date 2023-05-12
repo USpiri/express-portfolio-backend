@@ -85,6 +85,8 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
     const response = await updateUser(id, user)
     res.send(response)
   } catch (error) {
+    const { file } = req
+    if (file !== undefined) fs.unlinkSync(file.path)
     handleHttp(res, 'ERROR_UPDATE_USER', { errorRaw: error })
   }
 }
