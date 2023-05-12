@@ -17,7 +17,7 @@ const getImage = async ({ params }: Request, res: Response): Promise<void> => {
     const response = await findImage(id)
 
     if (response === null) {
-      handleHttp(res, 'ERROR_IMAGE_NOT_FOUNT', { code: 404 })
+      handleHttp(res, 'ERROR_IMAGE_NOT_FOUND', { code: 404 })
       return
     }
 
@@ -30,7 +30,11 @@ const getImage = async ({ params }: Request, res: Response): Promise<void> => {
 const getImages = async (req: Request, res: Response): Promise<void> => {
   try {
     const { type } = req.params
-    const response = isValidImageType(type) ? await findImagesByType(type) : await findImages()
+    const response = type === undefined ? await findImages() : await findImagesByType(type)
+    if (response.length === 0 && type !== undefined) {
+      handleHttp(res, 'ERROR_INVALID_IMAGE_TYPE', { code: 400 })
+      return
+    }
     res.send(response)
   } catch (error) {
     handleHttp(res, 'ERROR_GET_IMAGES', { errorRaw: error })
