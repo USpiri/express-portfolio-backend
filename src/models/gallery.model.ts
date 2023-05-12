@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
-import { Storage } from '@interface'
+import { Image } from '../interfaces/image.interface'
 
-export const GalleryShema = new Schema<Storage>(
+export const GalleryShema = new Schema<Image>(
   {
     filename: {
       type: String,
@@ -26,6 +26,11 @@ export const GalleryShema = new Schema<Storage>(
     },
     thumbnailUrl: {
       type: String,
+      required: true
+    },
+    type: {
+      type: String,
+      enum: ['NATURE', 'PORTRAIT'],
       required: true
     }
   },

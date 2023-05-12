@@ -1,8 +1,15 @@
 import { Request, Response } from 'express'
 import { handleHttp } from '../utils/error.handle'
-import { ExtendedRequest, Storage } from '@interface'
+import { ExtendedRequest, Image, ImageType } from '@interface'
 import fs from 'fs'
-import { findImage, findImages, removeImage, uploadImage } from '../services/gallery'
+import {
+  findImage,
+  findImages,
+  findImagesByType,
+  removeImage,
+  uploadImage
+} from '../services/gallery'
+import { isValidImageType } from '../utils/image.handle'
 
 const getImage = async ({ params }: Request, res: Response): Promise<void> => {
   try {
@@ -20,9 +27,10 @@ const getImage = async ({ params }: Request, res: Response): Promise<void> => {
   }
 }
 
-const getImages = async (_req: Request, res: Response): Promise<void> => {
+const getImages = async (req: Request, res: Response): Promise<void> => {
   try {
-    const response = await findImages()
+    const { type } = req.params
+    const response = isValidImageType(type) ? await findImagesByType(type) : await findImages()
     res.send(response)
   } catch (error) {
     handleHttp(res, 'ERROR_GET_IMAGES', { errorRaw: error })
@@ -31,21 +39,29 @@ const getImages = async (_req: Request, res: Response): Promise<void> => {
 
 const postImage = async (req: ExtendedRequest, res: Response): Promise<void> => {
   try {
-    const { file, token } = req
+    const { file, token, params } = req
+    const { type } = params
 
     if (file === undefined) {
       handleHttp(res, 'ERROR_FILE_NOT_PROVIDED', { code: 400 })
       return
     }
+
+    if (!isValidImageType(type)) {
+      handleHttp(res, 'ERROR_INVALID_IMAGE_TYPE', { code: 400 })
+      fs.unlinkSync(file.path)
+      return
+    }
     if (token === undefined) return
 
-    const data: Storage = {
+    const data: Image = {
       filename: file.filename,
       path: file.path,
       userId: token.id,
       ext: file.mimetype,
       imageSrc: `${req.protocol}://${req.get('host') ?? ''}/image/${file.filename}`,
-      thumbnailUrl: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${file.filename}`
+      thumbnailUrl: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${file.filename}`,
+      type: type as ImageType
     }
 
     const response = await uploadImage(data)

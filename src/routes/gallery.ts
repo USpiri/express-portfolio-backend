@@ -6,9 +6,9 @@ import multerMiddleware from '../middlewares/storage.middleware'
 
 const router = Router()
 
-router.get('/:id', getImage)
-router.get('/', getImages)
-router.post('/', checkSession, multerMiddleware.single('image'), postImage)
+router.get('/single/:id', getImage)
+router.get('/:type?', getImages)
+router.post('/:type?', checkSession, multerMiddleware.single('image'), postImage)
 router.delete('/:id', checkSession, deleteImage)
 
 export { router }
