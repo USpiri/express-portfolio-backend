@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose'
 import { Project } from '@interface'
+import { StorageShema } from './storage.model'
 
 const ProjectShema = new Schema<Project>(
   {
@@ -28,8 +29,7 @@ const ProjectShema = new Schema<Project>(
       required: true
     },
     image: {
-      type: String,
-      required: true
+      type: StorageShema
     }
   },
   {

@@ -1,3 +1,5 @@
+import { Storage } from './storage.interface'
+
 export interface Project {
   title: string
   tags: string[]
@@ -5,5 +7,5 @@ export interface Project {
   longDescription: string
   github: string
   link: string
-  image: string
+  image: Storage
 }

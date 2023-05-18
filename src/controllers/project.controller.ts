@@ -7,6 +7,10 @@ import {
   removeProject,
   updateProject
 } from '../services/project'
+import { getFileName, imageHandle, thumbnailHandle } from '../utils/image.handle'
+import { Storage } from '../interfaces/storage.interface'
+import { uploadFile } from '../services/storage'
+import { fit } from 'sharp'
 
 const getProject = async ({ params }: Request, res: Response): Promise<void> => {
   try {
@@ -52,6 +56,47 @@ const putProject = async ({ params, body }: Request, res: Response): Promise<voi
   }
 }
 
+const putProjectImage = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { params, file, protocol } = req
+    const { id } = params
+    const project = await findProject(id)
+
+    if (project === null) {
+      handleHttp(res, 'ERROR_PROJECT_NOT_FOUND', { code: 404 })
+      return
+    }
+    if (file === null || file === undefined) {
+      handleHttp(res, 'ERROR_FILE_NOT_PROVIDED', { code: 400 })
+      return
+    }
+    const filenameRandom = getFileName(file.originalname)
+
+    await imageHandle(file.buffer, filenameRandom, {
+      width: 1000,
+      height: 1000,
+      fit: fit.inside,
+      withoutEnlargement: true
+    })
+    await thumbnailHandle(file.buffer, filenameRandom, { width: 400, withoutEnlargement: true })
+
+    const data: Storage = {
+      filename: filenameRandom,
+      userId: id,
+      ext: file.mimetype,
+      imageSrc: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
+      thumbnailUrl: `${protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`
+    }
+
+    const newFile = await uploadFile(data)
+    project.image = newFile
+    const response = await updateProject(id, project)
+    res.send(response)
+  } catch (error) {
+    handleHttp(res, 'ERROR_UPDATE_PROJECT_IMAGE', { errorRaw: error })
+  }
+}
+
 const deleteProject = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const { id } = params
@@ -66,4 +111,4 @@ const deleteProject = async ({ params }: Request, res: Response): Promise<void> 
   }
 }
 
-export { getProject, getProjects, postProject, putProject, deleteProject }
+export { getProject, getProjects, postProject, putProject, deleteProject, putProjectImage }
