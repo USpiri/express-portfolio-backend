@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { handleHttp } from '../utils/error.handle'
 import { ExtendedRequest, Image, ImageType } from '@interface'
-import fs from 'fs'
 import {
   findImage,
   findImages,
@@ -9,7 +8,15 @@ import {
   removeImage,
   uploadImage
 } from '../services/gallery'
-import { isValidImageType } from '../utils/image.handle'
+import {
+  deleteImageFromStorage,
+  deleteThumbnailFromStorage,
+  getFileName,
+  imageHandle,
+  isValidImageType,
+  thumbnailHandle
+} from '../utils/image.handle'
+import { fit } from 'sharp'
 
 const getImage = async ({ params }: Request, res: Response): Promise<void> => {
   try {
@@ -30,9 +37,13 @@ const getImage = async ({ params }: Request, res: Response): Promise<void> => {
 const getImages = async (req: Request, res: Response): Promise<void> => {
   try {
     const { type } = req.params
-    const response = type === undefined ? await findImages() : await findImagesByType(type)
-    if (response.length === 0 && type !== undefined) {
+    if (type !== undefined && !isValidImageType(type)) {
       handleHttp(res, 'ERROR_INVALID_IMAGE_TYPE', { code: 400 })
+      return
+    }
+    const response = type === undefined ? await findImages() : await findImagesByType(type)
+    if (response.length === 0) {
+      handleHttp(res, 'ERROR_NO_IMAGES', { code: 404 })
       return
     }
     res.send(response)
@@ -53,26 +64,31 @@ const postImage = async (req: ExtendedRequest, res: Response): Promise<void> => 
 
     if (!isValidImageType(type)) {
       handleHttp(res, 'ERROR_INVALID_IMAGE_TYPE', { code: 400 })
-      fs.unlinkSync(file.path)
       return
     }
     if (token === undefined) return
+    const filenameRandom = getFileName(file.originalname)
+
+    await imageHandle(file.buffer, filenameRandom, {
+      width: 2000,
+      height: 2000,
+      fit: fit.inside,
+      withoutEnlargement: true
+    })
+    await thumbnailHandle(file.buffer, filenameRandom, { width: 400, withoutEnlargement: true })
 
     const data: Image = {
-      filename: file.filename,
-      path: file.path,
+      filename: filenameRandom,
       userId: token.id,
       ext: file.mimetype,
-      imageSrc: `${req.protocol}://${req.get('host') ?? ''}/image/${file.filename}`,
-      thumbnailUrl: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${file.filename}`,
+      imageSrc: `${req.protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
+      thumbnailUrl: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`,
       type: type as ImageType
     }
 
     const response = await uploadImage(data)
     res.send(response)
   } catch (error) {
-    const { file } = req
-    if (file !== undefined) fs.unlinkSync(file.path)
     handleHttp(res, 'ERROR_NEW_IMAGE', { errorRaw: error })
   }
 }
@@ -86,12 +102,13 @@ const deleteImage = async (req: Request, res: Response): Promise<void> => {
       handleHttp(res, 'ERROR_IMAGE_NOT_FOUND', { code: 404 })
       return
     }
-    fs.unlinkSync(image.path)
+
+    await deleteImageFromStorage(image.filename)
+    await deleteThumbnailFromStorage(image.filename)
+
     const response = await removeImage(id)
     res.send(response)
   } catch (error) {
-    const { file } = req
-    if (file !== undefined) fs.unlinkSync(file.path)
     handleHttp(res, 'ERROR_DELETE_IMAGE', { errorRaw: error })
   }
 }

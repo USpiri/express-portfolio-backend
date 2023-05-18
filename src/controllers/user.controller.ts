@@ -1,9 +1,15 @@
 import { Request, Response } from 'express'
 import { handleHttp } from '../utils/error.handle'
 import { createUser, findUser, findUsers, removeUser, updateUser } from '../services/user'
-import { Storage } from '@interface'
-import { findFile, removeFile, uploadFile } from '../services/storage'
-import fs from 'fs'
+import { uploadFile } from '../services/storage'
+import {
+  deleteImageFromStorage,
+  deleteThumbnailFromStorage,
+  getFileName,
+  imageHandle,
+  thumbnailHandle
+} from '../utils/image.handle'
+import { Storage } from '../interfaces/storage.interface'
 
 const getUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
@@ -55,13 +61,6 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
     const { id } = params
     const user = await findUser(id)
 
-    if (user?.image !== undefined) {
-      const dataFile = await findFile(user?.image._id ?? '')
-      if (dataFile !== null) {
-        fs.unlinkSync(dataFile.path)
-        await removeFile(dataFile.filename)
-      }
-    }
     if (user === null) {
       handleHttp(res, 'ERROR_USER_NOT_FOUND', { code: 404 })
       return
@@ -70,14 +69,25 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
       handleHttp(res, 'ERROR_FILE_NOT_PROVIDED', { code: 400 })
       return
     }
+    const filenameRandom = getFileName(file.originalname)
+
+    await imageHandle(file.buffer, filenameRandom, {
+      width: 800,
+      height: 800,
+      withoutEnlargement: true
+    })
+    await thumbnailHandle(file.buffer, filenameRandom, {
+      width: 300,
+      height: 300,
+      withoutEnlargement: true
+    })
 
     const data: Storage = {
-      filename: file.filename,
-      path: file.path,
+      filename: filenameRandom,
       userId: id,
       ext: file.mimetype,
-      imageSrc: `${protocol}://${req.get('host') ?? ''}/image/${file.filename}`,
-      thumbnailUrl: `${protocol}://${req.get('host') ?? ''}/thumbnail/${file.filename}`
+      imageSrc: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
+      thumbnailUrl: `${protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`
     }
 
     const newFile = await uploadFile(data)
@@ -85,8 +95,6 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
     const response = await updateUser(id, user)
     res.send(response)
   } catch (error) {
-    const { file } = req
-    if (file !== undefined) fs.unlinkSync(file.path)
     handleHttp(res, 'ERROR_UPDATE_USER', { errorRaw: error })
   }
 }
@@ -94,11 +102,19 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
 const deleteUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const { id } = params
-    const response = await removeUser(id)
-    if (response.deletedCount === 0) {
+    const user = await findUser(id)
+
+    if (user === null) {
       handleHttp(res, 'ERROR_USER_NOT_FOUND', { code: 404 })
       return
     }
+
+    if (user.image !== undefined) {
+      await deleteImageFromStorage(user.image.filename)
+      await deleteThumbnailFromStorage(user.image.filename)
+    }
+    const response = await removeUser(id)
+
     res.send(response)
   } catch (error) {
     handleHttp(res, 'ERROR_DELETE_USER', { errorRaw: error })

@@ -7,9 +7,6 @@ export const StorageShema = new Schema<Storage>(
       type: String,
       unique: true
     },
-    path: {
-      type: String
-    },
     userId: {
       type: String
     },
