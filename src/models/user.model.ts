@@ -59,7 +59,8 @@ const UserShema = new Schema<User>(
       required: true
     },
     image: {
-      type: StorageShema
+      type: StorageShema,
+      required: false
     },
     media: {
       type: SocialMediaShema,

@@ -5,7 +5,7 @@ export const StorageShema = new Schema<Storage>(
   {
     filename: {
       type: String,
-      unique: true
+      required: false
     },
     userId: {
       type: String

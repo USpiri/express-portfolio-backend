@@ -29,7 +29,8 @@ const ProjectShema = new Schema<Project>(
       required: true
     },
     image: {
-      type: StorageShema
+      type: StorageShema,
+      required: false
     }
   },
   {

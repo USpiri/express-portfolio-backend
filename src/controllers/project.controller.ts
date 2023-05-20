@@ -7,7 +7,13 @@ import {
   removeProject,
   updateProject
 } from '../services/project'
-import { getFileName, imageHandle, thumbnailHandle } from '../utils/image.handle'
+import {
+  deleteImageFromStorage,
+  deleteThumbnailFromStorage,
+  getFileName,
+  imageHandle,
+  thumbnailHandle
+} from '../utils/image.handle'
 import { Storage } from '../interfaces/storage.interface'
 import { uploadFile } from '../services/storage'
 import { fit } from 'sharp'
@@ -79,6 +85,7 @@ const putProjectImage = async (req: Request, res: Response): Promise<void> => {
       withoutEnlargement: true
     })
     await thumbnailHandle(file.buffer, filenameRandom, { width: 400, withoutEnlargement: true })
+    console.log(filenameRandom)
 
     const data: Storage = {
       filename: filenameRandom,
@@ -100,11 +107,18 @@ const putProjectImage = async (req: Request, res: Response): Promise<void> => {
 const deleteProject = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const { id } = params
-    const response = await removeProject(id)
-    if (response.deletedCount === 0) {
+    const project = await findProject(id)
+    if (project === null) {
       handleHttp(res, 'ERROR_PROJECT_NOT_FOUND', { code: 404 })
       return
     }
+
+    if (project.image !== undefined) {
+      await deleteImageFromStorage(project.image.filename)
+      await deleteThumbnailFromStorage(project.image.filename)
+    }
+
+    const response = await removeProject(id)
     res.send(response)
   } catch (error) {
     handleHttp(res, 'ERROR_DELETE_PROJECT', { errorRaw: error })
