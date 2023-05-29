@@ -69,6 +69,10 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
       handleHttp(res, 'ERROR_FILE_NOT_PROVIDED', { code: 400 })
       return
     }
+    if (user.image !== null && user.image !== undefined) {
+      await deleteImageFromStorage(user.image.filename)
+      await deleteThumbnailFromStorage(user.image.filename)
+    }
     const filenameRandom = getFileName(file.originalname)
 
     await imageHandle(file.buffer, filenameRandom, {
@@ -109,7 +113,7 @@ const deleteUser = async ({ params }: Request, res: Response): Promise<void> => 
       return
     }
 
-    if (user.image !== undefined) {
+    if (user.image !== null && user.image !== undefined) {
       await deleteImageFromStorage(user.image.filename)
       await deleteThumbnailFromStorage(user.image.filename)
     }

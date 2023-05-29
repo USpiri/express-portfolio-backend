@@ -76,16 +76,20 @@ const putProjectImage = async (req: Request, res: Response): Promise<void> => {
       handleHttp(res, 'ERROR_FILE_NOT_PROVIDED', { code: 400 })
       return
     }
+
+    if (project.image !== null && project.image !== undefined) {
+      await deleteImageFromStorage(project.image.filename)
+      await deleteThumbnailFromStorage(project.image.filename)
+    }
     const filenameRandom = getFileName(file.originalname)
 
     await imageHandle(file.buffer, filenameRandom, {
-      width: 1000,
-      height: 1000,
+      width: 640,
+      height: 800,
       fit: fit.inside,
       withoutEnlargement: true
     })
     await thumbnailHandle(file.buffer, filenameRandom, { width: 400, withoutEnlargement: true })
-    console.log(filenameRandom)
 
     const data: Storage = {
       filename: filenameRandom,
@@ -113,7 +117,7 @@ const deleteProject = async ({ params }: Request, res: Response): Promise<void> 
       return
     }
 
-    if (project.image !== undefined) {
+    if (project.image !== null && project.image !== undefined) {
       await deleteImageFromStorage(project.image.filename)
       await deleteThumbnailFromStorage(project.image.filename)
     }
