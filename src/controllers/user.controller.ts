@@ -2,13 +2,7 @@ import { Request, Response } from 'express'
 import { handleHttp } from '../utils/error.handle'
 import { createUser, findUser, findUsers, removeUser, updateUser } from '../services/user'
 import { uploadFile } from '../services/storage'
-import {
-  deleteImageFromStorage,
-  deleteThumbnailFromStorage,
-  getFileName,
-  imageHandle,
-  thumbnailHandle
-} from '../utils/image.handle'
+import { deleteImageFromStorage, getFileName, imageHandle } from '../utils/image.handle'
 import { Storage } from '../interfaces/storage.interface'
 
 const getUser = async ({ params }: Request, res: Response): Promise<void> => {
@@ -71,7 +65,6 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
     }
     if (user.image !== null && user.image !== undefined) {
       await deleteImageFromStorage(user.image.filename)
-      await deleteThumbnailFromStorage(user.image.filename)
     }
     const filenameRandom = getFileName(file.originalname)
 
@@ -80,18 +73,10 @@ const putUserImage = async (req: Request, res: Response): Promise<void> => {
       height: 800,
       withoutEnlargement: true
     })
-    await thumbnailHandle(file.buffer, filenameRandom, {
-      width: 300,
-      height: 300,
-      withoutEnlargement: true
-    })
 
     const data: Storage = {
       filename: filenameRandom,
-      userId: id,
-      ext: file.mimetype,
-      imageSrc: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
-      thumbnailUrl: `${protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`
+      src: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`
     }
 
     const newFile = await uploadFile(data)
@@ -115,7 +100,6 @@ const deleteUser = async ({ params }: Request, res: Response): Promise<void> => 
 
     if (user.image !== null && user.image !== undefined) {
       await deleteImageFromStorage(user.image.filename)
-      await deleteThumbnailFromStorage(user.image.filename)
     }
     const response = await removeUser(id)
 

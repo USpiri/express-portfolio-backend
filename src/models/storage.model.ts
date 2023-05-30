@@ -7,17 +7,13 @@ export const StorageShema = new Schema<Storage>(
       type: String,
       required: false
     },
-    userId: {
-      type: String
+    src: {
+      type: String,
+      required: true
     },
-    ext: {
-      type: String
-    },
-    imageSrc: {
-      type: String
-    },
-    thumbnailUrl: {
-      type: String
+    thumbnail: {
+      type: String,
+      required: false
     }
   },
   {

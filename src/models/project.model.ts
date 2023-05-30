@@ -22,11 +22,11 @@ const ProjectShema = new Schema<Project>(
     },
     github: {
       type: String,
-      required: true
+      required: false
     },
     link: {
       type: String,
-      required: true
+      required: false
     },
     image: {
       type: StorageShema,

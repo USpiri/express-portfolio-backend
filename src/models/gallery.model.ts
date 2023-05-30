@@ -8,19 +8,11 @@ export const GalleryShema = new Schema<Image>(
       unique: true,
       required: true
     },
-    userId: {
+    src: {
       type: String,
       required: true
     },
-    ext: {
-      type: String,
-      required: true
-    },
-    imageSrc: {
-      type: String,
-      required: true
-    },
-    thumbnailUrl: {
+    thumbnail: {
       type: String,
       required: true
     },

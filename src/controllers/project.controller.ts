@@ -7,13 +7,7 @@ import {
   removeProject,
   updateProject
 } from '../services/project'
-import {
-  deleteImageFromStorage,
-  deleteThumbnailFromStorage,
-  getFileName,
-  imageHandle,
-  thumbnailHandle
-} from '../utils/image.handle'
+import { deleteImageFromStorage, getFileName, imageHandle } from '../utils/image.handle'
 import { Storage } from '../interfaces/storage.interface'
 import { uploadFile } from '../services/storage'
 import { fit } from 'sharp'
@@ -79,7 +73,6 @@ const putProjectImage = async (req: Request, res: Response): Promise<void> => {
 
     if (project.image !== null && project.image !== undefined) {
       await deleteImageFromStorage(project.image.filename)
-      await deleteThumbnailFromStorage(project.image.filename)
     }
     const filenameRandom = getFileName(file.originalname)
 
@@ -89,14 +82,10 @@ const putProjectImage = async (req: Request, res: Response): Promise<void> => {
       fit: fit.inside,
       withoutEnlargement: true
     })
-    await thumbnailHandle(file.buffer, filenameRandom, { width: 400, withoutEnlargement: true })
 
     const data: Storage = {
       filename: filenameRandom,
-      userId: id,
-      ext: file.mimetype,
-      imageSrc: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
-      thumbnailUrl: `${protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`
+      src: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`
     }
 
     const newFile = await uploadFile(data)
@@ -119,7 +108,6 @@ const deleteProject = async ({ params }: Request, res: Response): Promise<void> 
 
     if (project.image !== null && project.image !== undefined) {
       await deleteImageFromStorage(project.image.filename)
-      await deleteThumbnailFromStorage(project.image.filename)
     }
 
     const response = await removeProject(id)

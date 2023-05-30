@@ -79,10 +79,8 @@ const postImage = async (req: ExtendedRequest, res: Response): Promise<void> => 
 
     const data: Image = {
       filename: filenameRandom,
-      userId: token.id,
-      ext: file.mimetype,
-      imageSrc: `${req.protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
-      thumbnailUrl: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`,
+      src: `${req.protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`,
+      thumbnail: `${req.protocol}://${req.get('host') ?? ''}/thumbnail/${filenameRandom}`,
       type: type as ImageType
     }
 

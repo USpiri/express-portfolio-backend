@@ -17,7 +17,7 @@ const ExperienceShema = new Schema<Experience>(
     },
     link: {
       type: String,
-      required: true
+      required: false
     }
   },
   {
