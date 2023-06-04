@@ -15,6 +15,6 @@ router.use('/gallery', routerGallery)
 router.use('/project', routerProject)
 router.use('/skill', routerSkill)
 router.use('/user', routerUser)
-router.use('/user', routerEmail)
+router.use('/email', routerEmail)
 
 export { router }
