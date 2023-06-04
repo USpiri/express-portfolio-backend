@@ -9,12 +9,12 @@ import {
 } from '../controllers/experience.controller'
 import { checkSession } from '../middlewares/session.middleware'
 
-const router = Router()
+const routerExperience = Router()
 
-router.get('/:id', getExperience)
-router.get('/', getExperiences)
-router.post('/', checkSession, postExperience)
-router.put('/:id', checkSession, putExperience)
-router.delete('/:id', checkSession, deleteExperience)
+routerExperience.get('/:id', getExperience)
+routerExperience.get('/', getExperiences)
+routerExperience.post('/', checkSession, postExperience)
+routerExperience.put('/:id', checkSession, putExperience)
+routerExperience.delete('/:id', checkSession, deleteExperience)
 
-export { router }
+export { routerExperience }

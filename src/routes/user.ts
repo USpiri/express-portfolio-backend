@@ -11,13 +11,13 @@ import {
 import { checkSession } from '../middlewares/session.middleware'
 import multerMiddleware from '../middlewares/storage.middleware'
 
-const router = Router()
+const routerUser = Router()
 
-router.get('/:id', getUser)
-router.get('/', getUsers)
-router.post('/', checkSession, postUser)
-router.put('/:id', checkSession, putUser)
-router.put('/image/:id', checkSession, multerMiddleware.single('profile-image'), putUserImage)
-router.delete('/:id', checkSession, deleteUser)
+routerUser.get('/:id', getUser)
+routerUser.get('/', getUsers)
+routerUser.post('/', checkSession, postUser)
+routerUser.put('/:id', checkSession, putUser)
+routerUser.put('/image/:id', checkSession, multerMiddleware.single('profile-image'), putUserImage)
+routerUser.delete('/:id', checkSession, deleteUser)
 
-export { router }
+export { routerUser }

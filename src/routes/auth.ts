@@ -3,9 +3,9 @@ import { Router } from 'express'
 import { loginAdmin, registerAdmin } from '../controllers/auth.controller'
 import { checkSession } from '../middlewares/session.middleware'
 
-const router = Router()
+const routerAuth = Router()
 
-router.post('/register', checkSession, registerAdmin)
-router.post('/login', loginAdmin)
+routerAuth.post('/register', checkSession, registerAdmin)
+routerAuth.post('/login', loginAdmin)
 
-export { router }
+export { routerAuth }

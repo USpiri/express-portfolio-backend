@@ -9,12 +9,12 @@ import {
 } from '../controllers/skill.controller'
 import { checkSession } from '../middlewares/session.middleware'
 
-const router = Router()
+const routerSkill = Router()
 
-router.get('/:id', getSkill)
-router.get('/', getSkills)
-router.post('/', checkSession, postSkill)
-router.put('/:id', checkSession, putSkill)
-router.delete('/:id', checkSession, deleteSkill)
+routerSkill.get('/:id', getSkill)
+routerSkill.get('/', getSkills)
+routerSkill.post('/', checkSession, postSkill)
+routerSkill.put('/:id', checkSession, putSkill)
+routerSkill.delete('/:id', checkSession, deleteSkill)
 
-export { router }
+export { routerSkill }

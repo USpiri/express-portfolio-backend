@@ -1,23 +1,18 @@
 import { Router } from 'express'
-import { readdirSync } from 'fs'
+import { routerAuth } from './auth'
+import { routerGallery } from './gallery'
+import { routerUser } from './user'
+import { routerExperience } from './experience'
+import { routerProject } from './project'
+import { routerSkill } from './skill'
 
-const PATH_ROUTER = `${__dirname}`
 const router = Router()
 
-const clearFileName = (filename: string): string => {
-  const file = filename.split('.').shift()
-  return file ?? ''
-}
-
-readdirSync(PATH_ROUTER).filter(async (filename) => {
-  const name = clearFileName(filename)
-
-  if (name !== 'index') {
-    await import(`./${name}`).then((routerModule) => {
-      console.log('Loading: ' + name)
-      router.use(`/${name}`, routerModule.router)
-    })
-  }
-})
+router.use('/auth', routerAuth)
+router.use('/experience', routerExperience)
+router.use('/gallery', routerGallery)
+router.use('/project', routerProject)
+router.use('/skill', routerSkill)
+router.use('/user', routerUser)
 
 export { router }
