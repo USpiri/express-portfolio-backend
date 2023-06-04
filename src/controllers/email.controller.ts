@@ -41,7 +41,7 @@ const sendEmail = async ({ body, params }: Request, res: Response): Promise<void
       if (err != null) {
         handleHttp(res, 'ERROR_SENDING_EMAIL', { code: 500, errorRaw: err })
       } else {
-        res.send('Mail sended')
+        res.send({ status: 'Mail sended' })
       }
     })
   } catch (error) {
