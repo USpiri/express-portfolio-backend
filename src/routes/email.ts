@@ -2,8 +2,8 @@
 import { Router } from 'express'
 import { sendEmail } from '../controllers/email.controller'
 
-const router = Router()
+const routerEmail = Router()
 
-router.post('/:id', sendEmail)
+routerEmail.post('/:id', sendEmail)
 
-export { router }
+export { routerEmail }

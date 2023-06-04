@@ -5,6 +5,7 @@ import { routerUser } from './user'
 import { routerExperience } from './experience'
 import { routerProject } from './project'
 import { routerSkill } from './skill'
+import { routerEmail } from './email'
 
 const router = Router()
 
@@ -14,5 +15,6 @@ router.use('/gallery', routerGallery)
 router.use('/project', routerProject)
 router.use('/skill', routerSkill)
 router.use('/user', routerUser)
+router.use('/user', routerEmail)
 
 export { router }
