@@ -1,6 +1,6 @@
-import { Storage } from './storage.interface'
+import { Document } from 'mongoose'
 
-export interface User {
+export interface User extends Document {
   name: string
   title: string
   description: string[]
@@ -8,7 +8,7 @@ export interface User {
   phone: string
   email: string
   location: string
-  image?: Storage
+  image?: string
   media: SocialMedia
 }
 

@@ -7,21 +7,17 @@ import {
   removeProject,
   updateProject
 } from '../services/project'
-import { deleteImageFromStorage, getFileName, imageHandle } from '../utils/image.handle'
-import { Storage } from '../interfaces/storage.interface'
-import { uploadFile } from '../services/storage'
+import { imageHandle } from '../utils/image.handle'
 import { fit } from 'sharp'
 
 const getProject = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const { id } = params
     const response = await findProject(id)
-
     if (response === null) {
       handleHttp(res, 'ERROR_PROJECT_NOT_FOUND', { code: 404 })
       return
     }
-
     res.send(response)
   } catch (error) {
     handleHttp(res, 'ERROR_GET_PROJECT', { errorRaw: error })
@@ -50,6 +46,10 @@ const putProject = async ({ params, body }: Request, res: Response): Promise<voi
   try {
     const { id } = params
     const response = await updateProject(id, body)
+    if (response === null) {
+      handleHttp(res, 'ERROR_PROJECT_NOT_FOUND', { code: 404 })
+      return
+    }
     res.send(response)
   } catch (error) {
     handleHttp(res, 'ERROR_UPDATE_PROJECT', { errorRaw: error })
@@ -58,7 +58,7 @@ const putProject = async ({ params, body }: Request, res: Response): Promise<voi
 
 const putProjectImage = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { params, file, protocol } = req
+    const { params, file } = req
     const { id } = params
     const project = await findProject(id)
 
@@ -71,25 +71,13 @@ const putProjectImage = async (req: Request, res: Response): Promise<void> => {
       return
     }
 
-    if (project.image !== null && project.image !== undefined) {
-      await deleteImageFromStorage(project.image.filename)
-    }
-    const filenameRandom = getFileName(file.originalname)
-
-    await imageHandle(file.buffer, filenameRandom, {
+    project.image = await imageHandle(file.buffer, {
       width: 640,
       height: 800,
       fit: fit.inside,
       withoutEnlargement: true
     })
 
-    const data: Storage = {
-      filename: filenameRandom,
-      src: `${protocol}://${req.get('host') ?? ''}/image/${filenameRandom}`
-    }
-
-    const newFile = await uploadFile(data)
-    project.image = newFile
     const response = await updateProject(id, project)
     res.send(response)
   } catch (error) {
@@ -104,10 +92,6 @@ const deleteProject = async ({ params }: Request, res: Response): Promise<void> 
     if (project === null) {
       handleHttp(res, 'ERROR_PROJECT_NOT_FOUND', { code: 404 })
       return
-    }
-
-    if (project.image !== null && project.image !== undefined) {
-      await deleteImageFromStorage(project.image.filename)
     }
 
     const response = await removeProject(id)

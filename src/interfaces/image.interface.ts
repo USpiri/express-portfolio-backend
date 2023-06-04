@@ -1,6 +1,6 @@
 import { Storage } from './storage.interface'
 
-export interface Image extends Omit<Storage, '_id'> {
+export interface Image extends Storage {
   type: ImageType
 }
 

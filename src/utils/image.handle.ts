@@ -1,45 +1,17 @@
 import sharp from 'sharp'
 import { imageHandler } from '../interfaces/handlers.interface'
-import fs from 'fs'
 
 const isValidImageType = (type: string): boolean => {
   return type === 'NATURE' || type === 'PORTRAIT'
 }
 
-const imageHandle = async (
-  file: Buffer,
-  fileName: string,
-  options: imageHandler
-): Promise<sharp.OutputInfo> => {
-  return await sharp(file).resize(options).toFile(`./storage/images/${fileName}`)
+const imageHandle = async (file: Buffer, options: imageHandler): Promise<string> => {
+  const base64Image = await sharp(file).resize(options).toBuffer()
+  return `data:image/jpeg;base64,${imageToBase64(base64Image)}`
 }
 
-const thumbnailHandle = async (
-  file: Buffer,
-  fileName: string,
-  options: imageHandler
-): Promise<sharp.OutputInfo> => {
-  return await sharp(file).resize(options).toFile(`./storage/thumbnails/${fileName}`)
+const imageToBase64 = (image: Buffer): string => {
+  return image.toString('base64')
 }
 
-const getFileName = (originalname: string): string => {
-  const ext = originalname.split('.').pop() ?? ''
-  return `image-${Date.now()}.${ext}`
-}
-
-const deleteImageFromStorage = async (fileName: string): Promise<void> => {
-  fs.unlinkSync(`./storage/images/${fileName}`)
-}
-
-const deleteThumbnailFromStorage = async (fileName: string): Promise<void> => {
-  fs.unlinkSync(`./storage/thumbnails/${fileName}`)
-}
-
-export {
-  isValidImageType,
-  imageHandle,
-  thumbnailHandle,
-  getFileName,
-  deleteImageFromStorage,
-  deleteThumbnailFromStorage
-}
+export { isValidImageType, imageHandle, imageToBase64 }

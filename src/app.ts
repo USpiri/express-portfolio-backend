@@ -10,8 +10,6 @@ const app = express()
 app.use(express.json({ limit: '25mb' }))
 app.use(cors())
 app.use(router)
-app.use('/image', express.static('storage/images'))
-app.use('/thumbnail', express.static('storage/thumbnails'))
 
 dbConnect()
   .then(() => console.log('Connection established'))

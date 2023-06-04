@@ -1,9 +1,4 @@
 node_modules
 package-lock.json
 .env
-storage/images/*
-storage/thumbnails/*
-!storage/.gitkeep
-!storage/images/.gitkeep
-!storage/thumbnails/.gitkeep
 dist/

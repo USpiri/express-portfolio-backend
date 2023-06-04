@@ -3,11 +3,6 @@ import { Image } from '../interfaces/image.interface'
 
 export const GalleryShema = new Schema<Image>(
   {
-    filename: {
-      type: String,
-      unique: true,
-      required: true
-    },
     src: {
       type: String,
       required: true
